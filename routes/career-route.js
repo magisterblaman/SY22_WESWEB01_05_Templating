@@ -1,4 +1,5 @@
 import http from 'http';
+import fs from 'fs/promises';
 
 export async function handleCareerRoute(pathSegments, request, response) {
 	// /careers/balblallba/blalbba
@@ -15,17 +16,19 @@ export async function handleCareerRoute(pathSegments, request, response) {
 		return;
 	}
 
-	response.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
-	response.write(`
-		<html>
-			<head>
+	let jobOpportunities = ['Kassör', 'Maskot', 'Kock', 'Hundslaktare', 'Städare', 'Chef'];
 
-			</head>
-			<body>
-				<h1>Karriärsmöjligheter</h1>
-			</body>
-		</html>
-	`);
+	let opportunitiesString = '';
+	for (let i = 0; i < jobOpportunities.length; i++) {
+		opportunitiesString += '<li>' + jobOpportunities[i] + '</li>';
+	}
+
+	let template = (await fs.readFile('templates/careers.volvo')).toString();
+
+	template = template.replaceAll('%{opportunities}%', opportunitiesString);
+
+	response.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
+	response.write(template);
 	response.end();
 	return;
 }
